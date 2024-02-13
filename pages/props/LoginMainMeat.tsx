@@ -1,6 +1,7 @@
 
 import React, { useCallback, useState, useMemo, useEffect } from 'react';
 import Input from '../components/Input';
+import axios from 'axios';
 
 
 interface MainMeatProps {
@@ -40,6 +41,18 @@ const LoginMainMeat: React.FC<MainMeatProps> = () => {
     setTimeout(()=>setDivLoaded(true),800)
   }, []);
 
+  const register = useCallback(async()=>{
+    try {
+      await axios.post('/api/register',{
+        email,
+        name,
+        password,
+      })
+    } catch (error) {
+      console.log(error)
+    }
+  },[email , name, password])
+
 
   return (
     <div className={`bg-black bg-opacity-70 lg:px-16 lg:py-16 m:px-12 md:px-12 sm:px-10 sm:py-10 self-center mt-2 lg:w-2/5 lg:max-w-md rounded-md w-4/5 
@@ -54,7 +67,7 @@ const LoginMainMeat: React.FC<MainMeatProps> = () => {
 
       
 
-      <button className="auth-login-button">{heading}</button>
+      <button onClick={register} className="auth-login-button">{heading}</button>
 
       <p className='text-neutral-500 mt-12'>
         {bottomMessage}
