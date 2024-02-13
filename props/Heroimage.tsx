@@ -1,6 +1,6 @@
 
 import Image from "next/image";
-import hero from "../../public/images/hero.png"
+import hero from "../public/images/hero.png"
 
 const HeroImage: React.FC = () => {
 
