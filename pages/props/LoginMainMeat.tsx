@@ -2,7 +2,8 @@
 import React, { useCallback, useState, useMemo, useEffect } from 'react';
 import Input from '../components/Input';
 import axios from 'axios';
-
+import { signIn } from 'next-auth/react';
+import { useRouter } from 'next/router';
 
 interface MainMeatProps {
   // Add any props if needed
@@ -10,6 +11,8 @@ interface MainMeatProps {
 
 
 const LoginMainMeat: React.FC<MainMeatProps> = () => {
+const router = useRouter();
+
   const [email, setEmail] = useState<string>("");
   const [name, setName] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -41,17 +44,44 @@ const LoginMainMeat: React.FC<MainMeatProps> = () => {
     setTimeout(()=>setDivLoaded(true),800)
   }, []);
 
+  const login = useCallback(async()=>{
+    try {
+      await signIn('credentials',{
+        email,
+        password,
+        redirect: false,
+        callbackUrl: '/'
+      })
+
+      router.push('/');
+    } catch (error) {
+      console.log(error)
+    }
+  },[email , password, router])
+
   const register = useCallback(async()=>{
     try {
       await axios.post('/api/register',{
         email,
         name,
         password,
-      })
+      });
+
+      login();
     } catch (error) {
       console.log(error)
     }
-  },[email , name, password])
+  },[email , name, password, login]);
+
+  
+
+  const handleSubmit = useCallback(async () => {
+    if (variant === 'signup') {
+      await register();
+    } else {
+      await login();
+    }
+  }, [variant, login, register]);
 
 
   return (
@@ -59,15 +89,16 @@ const LoginMainMeat: React.FC<MainMeatProps> = () => {
     transition-all duration-500 ease-in-out ${divLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'} z-0`}>
       <h2 className='text-white text-4xl mb-8 font-semibold'>{heading}</h2>
       <div className="flex flex-col gap-4">
-        {variant === 'signup' && renderInput('Email', email, setEmail, 'email', 'email')}
-        {renderInput('Username', name, setName, 'text', 'name')}
+        {renderInput('Email', email, setEmail, 'email', 'email')}
+
+        {variant === 'signup' && renderInput('Username', name, setName, 'text', 'name')}
         {renderInput('Password', password, setPassword, 'password', 'password')}
 
       </div>
 
       
 
-      <button onClick={register} className="auth-login-button">{heading}</button>
+      <button onClick={handleSubmit} className="auth-login-button">{heading}</button>
 
       <p className='text-neutral-500 mt-12'>
         {bottomMessage}
