@@ -1,6 +1,6 @@
-import HeroImage from "./props/Heroimage";
-import LogoImage from "./props/LogoImage"
-import LoginMainMeat from "./props/LoginMainMeat";
+import HeroImage from "../props/Heroimage";
+import LogoImage from "../props/LogoImage"
+import LoginMainMeat from "../props/LoginMainMeat";
 
 
 
