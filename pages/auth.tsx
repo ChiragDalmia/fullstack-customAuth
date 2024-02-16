@@ -1,8 +1,8 @@
-import axios from 'axios';
-import { useCallback, useState } from 'react';
-import { NextPageContext } from 'next';
-import { getSession, signIn } from 'next-auth/react';
+import React, { useCallback, useState } from 'react';
 import { useRouter } from 'next/router';
+import { getSession, signIn } from 'next-auth/react';
+import { NextPageContext } from 'next';
+import axios from 'axios';
 import { FcGoogle } from 'react-icons/fc';
 import { FaGithub } from 'react-icons/fa';
 
@@ -13,12 +13,11 @@ const LOGIN_ROUTE = '/';
 const PROFILE_ROUTE = '/profiles';
 const REGISTER_API = '/api/register';
 const LOGO_IMAGE = '/images/logo.png';
-const HERO_IMAGE = '/images/hero.png';
 
 export async function getServerSideProps(context: NextPageContext) {
   const session = await getSession(context);
   if (session) {
-    return { redirect: { destination: LOGIN_ROUTE, permanent: false } };
+    return { redirect: { destination: PROFILE_ROUTE, permanent: false } };
   }
   return { props: {} };
 }
@@ -29,17 +28,21 @@ const Auth: React.FC = () => {
   const [name, setName] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [variant, setVariant] = useState<'login' | 'register'>('login');
+  const [isLoading, setLoading] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>('');
 
   const toggleVariant = useCallback(() => {
-    setVariant((currentVariant) => currentVariant === 'login' ? 'register' : 'login');
+    setVariant(prevVariant => prevVariant === 'login' ? 'register' : 'login');
+    setErrorMessage(''); // Clear error message on variant toggle
   }, []);
 
   const handleError = (error: any) => {
-    // console.error(error);
-    // Implement more sophisticated error handling here if needed
+    setLoading(false); // Stop loading on error
+    setErrorMessage(error.message || 'An error occurred, please try again.');
   };
 
   const performSignIn = useCallback(async (provider: string, options: any) => {
+    setLoading(true);
     try {
       await signIn(provider, options);
       router.push(PROFILE_ROUTE);
@@ -48,7 +51,25 @@ const Auth: React.FC = () => {
     }
   }, [router]);
 
+  const validateCredentials = () => {
+    if (!email.trim() || !password.trim()) {
+      setErrorMessage('Email and password cannot be empty.');
+      return false;
+    }
+    return true;
+  };
+
+  const validateRegistration = () => {
+    if (!email.trim() || !name.trim() || !password.trim()) {
+      setErrorMessage('Email, username, and password cannot be empty.');
+      return false;
+    }
+    return true;
+  };
+
   const login = useCallback(() => {
+    if (!validateCredentials()) return;
+    setLoading(true);
     performSignIn('credentials', {
       email,
       password,
@@ -58,6 +79,8 @@ const Auth: React.FC = () => {
   }, [email, password, performSignIn]);
 
   const register = useCallback(async () => {
+    if (!validateRegistration()) return;
+    setLoading(true);
     try {
       await axios.post(REGISTER_API, { email, name, password });
       login();
@@ -68,7 +91,7 @@ const Auth: React.FC = () => {
 
   return (
     <div className="relative h-full w-full bg-[url('/images/hero.png')] bg-no-repeat bg-center bg-fixed bg-cover overflow-x-hidden overflow-y-hidden">
-      <div className="bg-black w-full h-full lg:bg-opacity-50 ">
+      <div className="bg-black w-full h-full lg:bg-opacity-50">
         <nav className="px-12 py-5">
           <img src={LOGO_IMAGE} className="h-12" alt="Logo" />
         </nav>
@@ -102,9 +125,14 @@ const Auth: React.FC = () => {
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)} 
               />
             </div>
-            <button onClick={variant === 'login' ? login : register} className="bg-red-600 py-3 text-white rounded-md w-full mt-10 hover:bg-red-700 transition">
-              {variant === 'login' ? 'Login' : 'Sign up'}
+            <button 
+              onClick={variant === 'login' ? login : register} 
+              className="bg-red-600 py-3 text-white rounded-md w-full mt-10 hover:bg-red-700 transition disabled:bg-red-500" 
+              disabled={isLoading}
+            >
+              {isLoading ? 'Loading...' : variant === 'login' ? 'Login' : 'Sign up'}
             </button>
+            {errorMessage && <p className="text-red-500 mt-2">{errorMessage}</p>}
             <div className="flex flex-row items-center gap-4 mt-8 justify-center">
               <div onClick={() => performSignIn('google', { callbackUrl: PROFILE_ROUTE })} className="w-10 h-10 bg-white rounded-full flex items-center justify-center cursor-pointer hover:opacity-80 transition">
                 <FcGoogle size={32} />
@@ -124,6 +152,8 @@ const Auth: React.FC = () => {
       </div>
     </div>
   );
+  
 }
+
 
 export default Auth;
