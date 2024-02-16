@@ -1,32 +1,48 @@
-import Image from "next/image";
-import { Inter } from "next/font/google";
-import { getSession } from "next-auth/react";
-import { NextPageContext } from "next";
-import Navbar from "@/components/Navbar";
+import React from 'react';
+import { NextPageContext } from 'next';
+import { getSession } from 'next-auth/react';
 
+import Navbar from '@/components/Navbar';
+import Billboard from '@/components/Billboard';
+import MovieList from '@/components/MovieList';
+import InfoModal from '@/components/InfoModal';
+import useMovieList from '@/hook/useMovieList';
+import useFavorites from '@/hook/useFavorites';
+import useInfoModalStore from '@/hook/useInfoModalStore';
 
-export async function getServerSideProps(context: NextPageContext){
+export async function getServerSideProps(context: NextPageContext) {
   const session = await getSession(context);
 
-  if (!session){
+  if (!session) {
     return {
       redirect: {
-        destination: "/auth",
+        destination: '/auth',
         permanent: false,
       }
     }
   }
 
-  return {props:{}}
+  return {
+    props: {}
+  }
 }
 
-export default function Home() {
+const Home = () => {
+  const { data: movies = [] } = useMovieList();
+  const { data: favorites = [] } = useFavorites();
+  const {isOpen, closeModal} = useInfoModalStore();
 
-  
   return (
     <>
-    <Navbar />
-    
+      <InfoModal visible={isOpen} onClose={closeModal} />
+      <Navbar />
+      <Billboard />
+      <div className="pb-40">
+        <MovieList title="Trending Now" data={movies} />
+        <MovieList title="My List" data={favorites} />
+      </div>
     </>
-  );
+  )
 }
+
+export default Home;
