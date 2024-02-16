@@ -1,50 +1,51 @@
 import axios from 'axios';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { PlusIcon, CheckIcon } from '@heroicons/react/24/outline';
 
 import useCurrentUser from '@/hook/useCurrentUser';
 import useFavorites from '@/hook/useFavorites';
 
 interface FavoriteButtonProps {
-  movieId: string
+  movieId: string;
 }
 
 const FavoriteButton: React.FC<FavoriteButtonProps> = ({ movieId }) => {
+  const { data: currentUser, mutate: mutateUser } = useCurrentUser();
   const { mutate: mutateFavorites } = useFavorites();
+  const [isFavorite, setIsFavorite] = useState<boolean>(false);
 
-  const { data: currentUser, mutate } = useCurrentUser();
-
-  const isFavorite = useMemo(() => {
-    const list = currentUser?.favoriteIds || [];
-
-    return list.includes(movieId);
+  useEffect(() => {
+    setIsFavorite(currentUser?.favoriteIds?.includes(movieId) ?? false);
   }, [currentUser, movieId]);
 
-  const toggleFavorites = useCallback(async () => {
-    let response;
+  const updateFavoriteStatus = async (isAdding: boolean) => {
+    try {
+      const response = isAdding
+        ? await axios.post<{ favoriteIds: string[] }>('/api/favorite', { movieId })
+        : await axios.delete<{ favoriteIds: string[] }>('/api/favorite', { data: { movieId } });
 
-    if (isFavorite) {
-      response = await axios.delete('/api/favorite', { data: { movieId } });
-    } else {
-      response = await axios.post('/api/favorite', { movieId });
+      const updatedFavoriteIds = response.data.favoriteIds;
+      mutateUser({ ...currentUser, favoriteIds: updatedFavoriteIds });
+      mutateFavorites();
+    } catch (error) {
+      console.error('Error updating favorites', error);
     }
+  };
 
-    const updatedFavoriteIds = response?.data?.favoriteIds;
+  const toggleFavorites = useCallback(() => {
+    updateFavoriteStatus(!isFavorite);
+  }, [isFavorite, updateFavoriteStatus]);
 
-    mutate({ 
-      ...currentUser, 
-      favoriteIds: updatedFavoriteIds,
-    });
-    mutateFavorites();
-  }, [movieId, isFavorite, currentUser, mutate, mutateFavorites]);
-  
   const Icon = isFavorite ? CheckIcon : PlusIcon;
 
   return (
-    <div onClick={toggleFavorites} className="cursor-pointer group/item w-6 h-6 lg:w-10 lg:h-10 border-white border-2 rounded-full flex justify-center items-center transition hover:border-neutral-300">
-      <Icon className="text-white group-hover/item:text-neutral-300 w-4 lg:w-6" />
-    </div>
-  )
-}
+    <button
+      onClick={toggleFavorites}
+      className={`p-2 rounded-full transition-all ease-in-out duration-300 ${isFavorite ? 'bg-green-400 hover:bg-green-500' : 'bg-gray-200 hover:bg-gray-300'} flex justify-center items-center`}
+    >
+      <Icon className={`w-4 h-4 lg:w-6 lg:h-6 ${isFavorite ? 'text-white' : 'text-black'}`} />
+    </button>
+  );
+};
 
 export default FavoriteButton;
