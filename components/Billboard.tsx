@@ -23,7 +23,15 @@ const Billboard: React.FC = () => {
     }
   }, [openModal, data]);
 
-  if (isLoading) return <div>Loading...</div>;
+if (isLoading) {
+  return (
+    <div className="flex justify-center items-center h-screen">
+      <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+    </div>
+  );
+}
+
+
   if (error) return <div>Error loading billboard data.</div>;
 
   return (
