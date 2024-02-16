@@ -1,6 +1,7 @@
 import { signOut } from 'next-auth/react';
 import React from 'react';
 import useCurrentUser from '@/hook/useCurrentUser';
+import Image from 'next/image';
 
 interface User {
   name: string;
@@ -15,7 +16,7 @@ const UserDisplay: React.FC<UserDisplayProps> = ({ user }) => {
 
   return (
     <div className="flex flex-row gap-3 items-center w-full px-3">
-      <img className="w-8 rounded-md" src="/images/default-blue.png" alt="User Profile" />
+      <Image className=" rounded-md" src="/images/default-blue.png" alt="User Profile" width={40} height={32}/>
       <p className="text-white text-sm hover:underline">{user.name}</p>
     </div>
   );

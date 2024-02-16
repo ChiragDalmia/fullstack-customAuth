@@ -7,6 +7,7 @@ import { FcGoogle } from 'react-icons/fc';
 import { FaGithub } from 'react-icons/fa';
 
 import Input from '@/components/Input';
+import Image from 'next/image';
 
 // Constants for routes, API endpoints, and image paths
 const LOGIN_ROUTE = '/';
@@ -76,7 +77,7 @@ const Auth: React.FC = () => {
       redirect: false,
       callbackUrl: PROFILE_ROUTE
     });
-  }, [email, password, performSignIn]);
+  }, [email, password, performSignIn, validateCredentials]);
 
   const register = useCallback(async () => {
     if (!validateRegistration()) return;
@@ -87,13 +88,13 @@ const Auth: React.FC = () => {
     } catch (error) {
       handleError(error);
     }
-  }, [email, name, password, login]);
+  }, [email, name, password, login, validateRegistration]);
 
   return (
     <div className="relative h-full w-full bg-[url('/images/hero.png')] bg-no-repeat bg-center bg-fixed bg-cover overflow-x-hidden overflow-y-hidden">
       <div className="bg-black w-full h-full lg:bg-opacity-50">
         <nav className="px-12 py-5">
-          <img src={LOGO_IMAGE} className="h-12" alt="Logo" />
+        <Image src={LOGO_IMAGE} className="h-12" alt="Logo" width={200} height={12} />
         </nav>
         <div className="flex justify-center">
           <div className="bg-black bg-opacity-70 px-16 py-16 self-center mt-2 lg:w-2/5 lg:max-w-md rounded-md w-full">

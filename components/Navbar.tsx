@@ -1,36 +1,47 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { BellIcon, MagnifyingGlassIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
 
 import AccountMenu from '@/components/AccountMenu';
 import MobileMenu from '@/components/MobileMenu';
 import NavbarItem from '@/components/NavbarItem';
+import Image from 'next/image';
 
 const TOP_OFFSET = 66;
 
-const Navbar: React.FC = () => {
+const Navbar = () => {
   const [showAccountMenu, setShowAccountMenu] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showBackground, setShowBackground] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      const shouldShowBackground = window.scrollY >= TOP_OFFSET;
-      if (showBackground !== shouldShowBackground) {
-        setShowBackground(shouldShowBackground);
+      console.log(window.scrollY)
+      if (window.scrollY >= TOP_OFFSET) {
+        setShowBackground(true)
+      } else {
+        setShowBackground(false)
       }
-    };
+    }
 
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [showBackground]);
 
-  const toggleAccountMenu = () => setShowAccountMenu(prev => !prev);
-  const toggleMobileMenu = () => setShowMobileMenu(prev => !prev);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    }
+  }, []);
+
+  const toggleAccountMenu = useCallback(() => {
+    setShowAccountMenu((current) => !current);
+  }, []);
+
+  const toggleMobileMenu = useCallback(() => {
+    setShowMobileMenu((current) => !current);
+  }, []);
 
   return (
     <nav className="w-full fixed z-40">
       <div className={`px-4 md:px-16 py-6 flex flex-row items-center transition duration-500 ${showBackground ? 'bg-zinc-900 bg-opacity-90' : ''}`}>
-      <img src="/images/logo.png" className="h-4 lg:h-7" alt="Logo" />
+        <Image src="/images/logo.png" width={100} height={10} className="h-4 lg:h-7" alt="Logo" />
         <div className="flex-row ml-8 gap-7 hidden lg:flex">
           <NavbarItem label="Home" active />
           <NavbarItem label="Series" />
@@ -53,7 +64,7 @@ const Navbar: React.FC = () => {
           </div>
           <div onClick={toggleAccountMenu} className="flex flex-row items-center gap-2 cursor-pointer relative">
             <div className="w-6 h-6 lg:w-10 lg:h-10 rounded-md overflow-hidden">
-              <img src="/images/default-blue.png" alt="" />
+              <Image width={100} height={100} src="/images/default-blue.png" alt="" />
             </div>
             <ChevronDownIcon className={`w-4 text-white fill-white transition ${showAccountMenu ? 'rotate-180' : 'rotate-0'}`} />
             <AccountMenu visible={showAccountMenu} />
@@ -61,7 +72,7 @@ const Navbar: React.FC = () => {
         </div>
       </div>
     </nav>
-  );
-};
+  )
+}
 
 export default Navbar;
