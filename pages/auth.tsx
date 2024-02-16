@@ -52,21 +52,21 @@ const Auth: React.FC = () => {
     }
   }, [router]);
 
-  const validateCredentials = () => {
+  const validateCredentials = useCallback(() => {
     if (!email.trim() || !password.trim()) {
       setErrorMessage('Email and password cannot be empty.');
       return false;
     }
     return true;
-  };
+  }, [email, password]);
 
-  const validateRegistration = () => {
+  const validateRegistration = useCallback(() => {
     if (!email.trim() || !name.trim() || !password.trim()) {
       setErrorMessage('Email, username, and password cannot be empty.');
       return false;
     }
     return true;
-  };
+  }, [email, name, password]);
 
   const login = useCallback(() => {
     if (!validateCredentials()) return;
