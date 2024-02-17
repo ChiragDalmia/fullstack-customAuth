@@ -142,7 +142,7 @@ const Auth: React.FC = () => {
                 <FaGithub size={32} />
               </div>
             </div>
-            <p className="text-neutral-500 mt-12">
+            <p className="text-neutral-500 mt-5">
               {variant === 'login' ? 'First time using Netflix?' : 'Already have an account?'}
               <span onClick={toggleVariant} className="text-white ml-1 hover:underline cursor-pointer">
                 {variant === 'login' ? 'Create an account' : 'Login'}
