@@ -44,7 +44,7 @@ const Billboard: React.FC = () => {
     );
   }
 
-  if (error) return <div>Error loading billboard data.</div>;
+  if (error) return <div className='flex justify-center items-center h-screen text-cyan-100'>Error loading billboard data.</div>;
 
   return (
     <div className="relative h-[56.25vw]">

@@ -29,13 +29,13 @@ const MovieCard: React.FC<MovieCardProps> = ({ data }) => {
   }, [router, data.id]);
 
   return (
-    <div className="group bg-zinc-900 col-span relative h-[12vw]">
+    <div className="group bg-zinc-900 col-span relative h-[12vw] sm:h-[20vw]">
       <Image
         onClick={redirectToWatch}
         src={data.thumbnailUrl}
         alt={data.title}
         draggable={false}
-        className="cursor-pointer object-cover transition duration-300 shadow-xl rounded-md group-hover:opacity-90 sm:group-hover:opacity-0 delay-300 w-full h-[12vw]"
+        className="cursor-pointer object-cover transition duration-300 shadow-xl rounded-md group-hover:opacity-90 sm:group-hover:opacity-0 delay-300 w-full h-[12vw] sm:h-[20vw]"
         width={555}
         height={555}
       />
@@ -63,7 +63,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ data }) => {
           draggable={false}
           width={100}
           height={100}
-          className="cursor-pointer object-cover transition duration-300 shadow-xl rounded-t-md w-full h-[12vw]"
+          className="cursor-pointer object-cover transition duration-300 shadow-xl rounded-t-md w-full h-[12vw] sm:h-[20vw]"
         />
         <div className="z-10 bg-zinc-800 p-2 lg:p-4 absolute w-full transition shadow-md rounded-b-md">
           <div className="flex flex-row items-center gap-3">

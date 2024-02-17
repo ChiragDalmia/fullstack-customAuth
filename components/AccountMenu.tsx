@@ -39,7 +39,7 @@ const AccountMenu: React.FC<AccountMenuProps> = ({ visible }) => {
   if (error) return <p>Error loading user data.</p>;
 
   return (
-    <div className="bg-black w-56 absolute top-14 right-0 py-5 flex flex-col border-2 border-gray-800">
+    <div className="bg-black w-56 absolute top-14 right-0 py-5 flex flex-col border-2 border-gray-800 rounded-md">
       <UserDisplay user={currentUser} />
       <hr className="bg-gray-600 border-0 h-px my-4" />
       <SignOutButton />
