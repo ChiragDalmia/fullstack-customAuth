@@ -20,3 +20,7 @@ Hey there! this Netflix Clone App is a personal project, I crafted to flex my we
 - **Trending Movies**: Curated list, straight from the database.
 - **Favorites**: Personalized movie experience by adding top picks.
 - **More Info**: Detailed movie insights just a click away.
+
+
+https://github.com/ChiragDalmia/netflix-fullStack/assets/119760552/81e84c97-13d9-4a48-b2a9-fb64b054e6ae
+
